@@ -77,6 +77,8 @@ package. It accepts no options.
 .. _sphinx.ext.inheritance_diagram: http://sphinx-doc.org/latest/ext/inheritance.html
 """
 
+from __future__ import unicode_literals
+
 import inspect
 import os
 import re
@@ -200,7 +202,7 @@ class Automoddiagram(InheritanceDiagram):
         oldargs = self.arguments
         try:
             if len(clsnms) > 0:
-                self.arguments = [u' '.join(clsnms)]
+                self.arguments = [' '.join(clsnms)]
             return InheritanceDiagram.run(self)
         finally:
             self.arguments = oldargs
@@ -417,7 +419,7 @@ def generate_automodsumm_docs(lines, srcfn, suffix='.rst', warn=None,
 
         try:
             name, obj, parent = import_by_name(name)
-        except ImportError, e:
+        except ImportError as e:
             warn('[automodsumm] failed to import %r: %s' % (name, e))
             continue
 
@@ -570,6 +572,6 @@ def setup(app):
 
     app.add_directive('automod-diagram', Automoddiagram)
     app.add_directive('automodsumm', Automodsumm)
-    app.connect('builder-inited', process_automodsumm_generation)
+    app.connect(str('builder-inited'), process_automodsumm_generation)
 
     app.add_config_value('automodsumm_writereprocessed', False, True)
