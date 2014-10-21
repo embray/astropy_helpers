@@ -121,7 +121,8 @@ def test_build_sphinx(tmpdir, capture_warnings):
     Test for build_sphinx
     """
 
-    ah_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    import astropy_helpers
+    ah_path = os.path.abspath(os.path.dirname(astropy_helpers.__path__[0]))
 
     test_pkg = tmpdir.mkdir('test_pkg')
 
@@ -142,13 +143,13 @@ def test_build_sphinx(tmpdir, capture_warnings):
 
     test_pkg.join('docs').join('conf.py').write(dedent("""\
         import sys
-        sys.path.append("../")
+        sys.path.insert(0, {ah_path!r})
         import warnings
         with warnings.catch_warnings():  # ignore matplotlib warning
             warnings.simplefilter("ignore")
             from astropy_helpers.sphinx.conf import *
         exclude_patterns.append('_templates')
-    """))
+    """.format(ah_path=ah_path)))
 
     test_pkg.join('docs').join('index.rst').write(dedent("""\
         .. automodapi:: mypackage
@@ -173,12 +174,8 @@ def test_build_sphinx(tmpdir, capture_warnings):
         )
     """))
 
-    test_pkg.chdir()
-
-    import shutil
-    shutil.copytree(ah_path, 'astropy_helpers')
-
-    if capture_warnings:
-        run_setup('setup.py', ['build_sphinx', '-w'])
-    else:
-        run_setup('setup.py', ['build_sphinx'])
+    with test_pkg.as_cwd():
+        if capture_warnings:
+            run_setup('setup.py', ['build_sphinx', '-w'])
+        else:
+            run_setup('setup.py', ['build_sphinx'])

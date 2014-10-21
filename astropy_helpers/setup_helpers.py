@@ -867,7 +867,11 @@ if _module_state['have_sphinx']:
             build_cmd = self.get_finalized_command('build')
             build_cmd_path = os.path.abspath(build_cmd.build_lib)
 
-            ah_importer = pkgutil.get_importer('astropy_helpers')
+            ah_importer = pkgutil.get_loader('astropy_helpers')
+            # Note: This will bomb out if astropy_helpers was imported from
+            # something more exotic than the normal filesystem loader, though
+            # that should be essentially unheard of in the limited context of
+            # building the docs...?
             ah_path = os.path.abspath(ah_importer.path)
 
             #Now generate the source for and spawn a new process that runs the
