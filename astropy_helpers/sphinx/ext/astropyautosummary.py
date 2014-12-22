@@ -7,8 +7,12 @@ The main issue this fixes is the summary tables getting cut off before the
 end of the sentence in some cases.
 
 """
+
 import re
 
+from distutils.version import LooseVersion
+
+import sphinx
 from sphinx.ext.autosummary import Autosummary
 
 # used in AstropyAutosummary.get_items
@@ -94,5 +98,16 @@ class AstropyAutosummary(Autosummary):
 def setup(app):
     # need autosummary, of course
     app.setup_extension('sphinx.ext.autosummary')
-    # this replaces the default autosummary with the astropy one
-    app.add_directive('autosummary', AstropyAutosummary)
+
+    if LooseVersion(sphinx.__version__) < LooseVersion('1.2'):
+        # this replaces the default autosummary with the astropy one
+        app.add_directive('autosummary', AstropyAutosummary)
+    else:
+        # Don't bother using our version with Sphinx >= 1.2--it seems to have
+        # fixed the issues that we needed the replacement for in the first
+        # place, and our version does not play well with newer versions of
+        # Sphinx either.
+        app.warn('Use of the {0} extension is deprecated for Sphinx >= 1.2; '
+                 'this extension can be removed from the extensions list in '
+                 'your Sphinx conf.py if you do not require support for '
+                 'older versions of Sphinx.'.format(__name__))

@@ -117,7 +117,6 @@ extensions = [
     'sphinx.ext.pngmath',
     'sphinx.ext.inheritance_diagram',
     'astropy_helpers.sphinx.ext.numpydoc',
-    'astropy_helpers.sphinx.ext.astropyautosummary',
     'astropy_helpers.sphinx.ext.automodsumm',
     'astropy_helpers.sphinx.ext.automodapi',
     'astropy_helpers.sphinx.ext.tocdepthfix',
@@ -125,7 +124,17 @@ extensions = [
     'astropy_helpers.sphinx.ext.changelog_links',
     'astropy_helpers.sphinx.ext.viewcode',  # Use patched version of viewcode
     'astropy_helpers.sphinx.ext.smart_resolver'
-    ]
+]
+
+try:
+    check_sphinx_version(needs_sphinx)
+except:
+    pass
+else:
+    # Sphinx version is < 1.2 (or some other exceptional condition occurred in
+    # which case this doesn't matter) so include the astropyautosummary in the
+    # standard set of extensions
+    extensions.append('astropy_helpers.sphinx.ext.astropyautosummary')
 
 # Above, we use a patched version of viewcode rather than 'sphinx.ext.viewcode'
 # This can be changed to the sphinx version once the following issue is fixed
