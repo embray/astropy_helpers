@@ -46,12 +46,14 @@ class AstropyBuildSphinx(SphinxBuildDoc):
     user_options.append(('open-docs-in-browser', 'o',
             'Open the docs in a browser (using the webbrowser module) if the '
             'build finishes successfully.'))
+    user_options.append(('debug-script', None, ''))
 
     boolean_options = SphinxBuildDoc.boolean_options[:]
     boolean_options.append('warnings-returncode')
     boolean_options.append('clean-docs')
     boolean_options.append('no-intersphinx')
     boolean_options.append('open-docs-in-browser')
+    boolean_options.append('debug-script')
 
     _self_iden_rex = re.compile(r"self\.([^\d\W][\w]+)", re.UNICODE)
 
@@ -61,6 +63,7 @@ class AstropyBuildSphinx(SphinxBuildDoc):
         self.no_intersphinx = False
         self.open_docs_in_browser = False
         self.warnings_returncode = False
+        self.debug_script = False
 
     def finalize_options(self):
         #Clear out previous sphinx builds, if requested
@@ -162,6 +165,11 @@ class AstropyBuildSphinx(SphinxBuildDoc):
             # so remain vigilant!
             subproccode = subproccode.replace('confoverrides = {}',
                 'confoverrides = {\'intersphinx_mapping\':{}}')
+
+        if self.debug_script:
+            with open('build_sphinx.py', 'w') as f:
+                f.write(subproccode)
+            return
 
         log.debug('Starting subprocess of {0} with python code:\n{1}\n'
                   '[CODE END])'.format(sys.executable, subproccode))
